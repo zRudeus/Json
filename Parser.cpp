@@ -2,7 +2,7 @@
 // Created by rzakr on 14.12.2025.
 //
 #include "Parser.h"
-#include <istream>
+using namespace JsonDecls;
 
 std::string buff;
 std::size_t offset;
@@ -23,20 +23,20 @@ char next(){
 }
 Json parseJson();
 
-Json::Null parseNull(){
+Null parseNull(){
     match("null");
-    return Json::Null();
+    return Null();
 }
-Json::Bool parseBool(){
+Bool parseBool(){
     if (next() == 't') {
         match("true");
-        return Json::Bool(true);
+        return Bool(true);
     } else {
         match("false");
-        return Json::Bool(false);
+        return Bool(false);
     }
 }
-Json::Number parseNumber(){
+Number parseNumber(){
     static constexpr std::string_view digits ="0123456789";
     std::size_t begin = offset;
     std::size_t size = 0;
@@ -55,7 +55,7 @@ Json::Number parseNumber(){
     }
     return stod(buff.substr(begin, size));
 }
-Json::String parseString(){
+String parseString(){
     match("\"");
     std::size_t begin = offset;
     std::size_t size = 0;
@@ -66,9 +66,9 @@ Json::String parseString(){
     match("\"");
     return buff.substr(begin, size);
 }
-Json::Array parseArray(){
+Array parseArray(){
     match("[");
-    Json::Array result;
+    Array result;
     if (next() != ']') {
         result.emplace_back(parseJson());
         while (next() == ',') {
@@ -79,9 +79,9 @@ Json::Array parseArray(){
     match("]");
     return std::move(result);
 }
-Json::Object parseObject(){
+Object parseObject(){
     match("{");
-    Json::Object result;
+    Object result;
     auto match_record = [&]{
         auto key = parseString();
         match(":");

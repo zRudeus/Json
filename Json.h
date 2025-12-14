@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <type_traits>
+#include <typeinfo>
+
 template <typename T, typename... Types>
 concept OneOf = (std::is_same_v<T, Types> || ...);
 
@@ -29,6 +32,7 @@ public:
         virtual void operator()(String&) = 0;
         virtual void operator()(Array&) = 0;
         virtual void operator()(Object&) = 0;
+        virtual ~Visitor() = default;
     };
 private:
     struct Concept{
@@ -70,18 +74,32 @@ public:
         value = other.value->clone();
         return *this;
     }
-    Json& operator[](std::size_t index) const {
+    Json& operator[](std::size_t index) {
         auto& t = as<Array>();
         return t.at(index);
     }
-    Json& operator()(String key) const {
+    const Json& operator[](std::size_t index) const {
+        auto& t = as<Array>();
+        return t.at(index);
+    }
+    Json& operator()(const String& key) {
+        auto& t = as<Object>();
+        return t.at(key);
+    }
+    const Json& operator()(const String& key) const {
         auto& t = as<Object>();
         return t.at(key);
     }
 
     template<typename T>
     requires OneOf<T, Number, Object, String, Array, Bool, Null>
-    T& as() const {
+    const T& as() const {
+        if (not is<T>()) throw std::bad_cast();
+        return dynamic_cast<Model<T>*>(value.get())->data;
+    };
+    template<typename T>
+    requires OneOf<T, Number, Object, String, Array, Bool, Null>
+    T& as() {
         if (not is<T>()) throw std::bad_cast();
         return dynamic_cast<Model<T>*>(value.get())->data;
     };

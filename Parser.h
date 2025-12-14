@@ -6,8 +6,9 @@
 #define JSONPARSER_PARSER_H
 
 #include "Json.h"
+#include <istream>
 
 class ParseError{};
-
 Json parse(std::istream & input);
+
 #endif //JSONPARSER_PARSER_H
