@@ -51,15 +51,10 @@ std::cout << t;
 ## Core Types: `Json`
 
 * `Json` is a value type that owns exactly one JSON value at runtime.
-
-  * Internally, it uses:
-
   * A type-erased `Concept` interface
   * A templated `Model<T>` implementation per JSON type
   * Deep-copy semantics via virtual `clone()`
-
   * All copies of `Json` are independent and safe.
-
 * `Json::Null` – empty tag type representing `null`
 * `Json::Bool` – `bool`
 * `Json::Number` – `double`
@@ -77,16 +72,12 @@ The API provides **explicit runtime type checks**:
 
 * `is<T>()`
   Returns `true` if the stored value is of type `T`
-
 * `as<T>()`
   Returns a mutable reference to the stored value
-
 * `operator[]`
   Access array elements (bounds-checked)
-
 * `operator()`
   Access object members by key
-
 Access functions assume the underlying type is correct and will throw `std::bad_cast` if misused.
 
 ---
